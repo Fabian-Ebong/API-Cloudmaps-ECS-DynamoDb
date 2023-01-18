@@ -48,3 +48,6 @@ variable "allow_sg_cidr" {
 variable "s3_tfstate_bucket_name" {
   
 }
+variable "cloudmap_namespace" {
+  
+}

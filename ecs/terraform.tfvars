@@ -21,3 +21,6 @@ ecs_max_healthy_percent  = 100
 
 #Give s3 bucket name to keep tfstate file.
 s3_tfstate_bucket_name   = ""
+
+#  ID of the Existing CloudMap Mapnamespace
+cloudmap_namespace = "ns-lkjmqmwlturzsowt"
