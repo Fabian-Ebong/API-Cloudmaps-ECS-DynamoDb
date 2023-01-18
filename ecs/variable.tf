@@ -45,3 +45,6 @@ variable "ecs_max_healthy_percent" {
 variable "allow_sg_cidr" {
   
 }
+variable "s3_tfstate_bucket_name" {
+  
+}
