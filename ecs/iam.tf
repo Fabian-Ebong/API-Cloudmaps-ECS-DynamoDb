@@ -1,6 +1,6 @@
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "${var.env_prefix_name}-task-executaion-role"
- 
+
   assume_role_policy = <<EOF
 {
  "Version": "2012-10-17",
@@ -27,7 +27,7 @@ resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attach
 
 resource "aws_iam_role" "ecs_task_role" {
   name = "${var.env_prefix_name}-task-role"
- 
+
   assume_role_policy = <<EOF
 {
  "Version": "2012-10-17",
@@ -44,15 +44,15 @@ resource "aws_iam_role" "ecs_task_role" {
 }
 EOF
 }
- 
+
 
 
 
 resource "aws_iam_policy" "dynamodb" {
   name        = "${var.env_prefix_name}-task-policy"
   description = "Policy that allows access to Other Services"
- 
- policy = <<EOF
+
+  policy = <<EOF
 {
    "Version": "2012-10-17",
    "Statement": [
@@ -80,4 +80,24 @@ EOF
 resource "aws_iam_role_policy_attachment" "ecs-task-role-policy-attachment" {
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = aws_iam_policy.dynamodb.arn
+}
+
+resource "aws_iam_policy" "policy" {
+  name        = "fluent-bit-policy"
+  description = "Fluent Bit Policy"
+
+  policy = <<EOT
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "es:ESHttp*"
+            ],
+            "Resource": "arn:aws:es:${var.region}:${data.aws_caller_identity.current.account_id}:domain/${var.os_domain_name}",
+            "Effect": "Allow"
+        }
+    ]
+}
+EOT
 }

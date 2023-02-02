@@ -1,9 +1,9 @@
-resource "aws_ecs_cluster" "my-test-cluster"{
+resource "aws_ecs_cluster" "my-ecs-cluster" {
   name = "${var.env_prefix_name}-ecs-cluster"
 }
 
 resource "aws_ecs_cluster_capacity_providers" "this" {
-  cluster_name = aws_ecs_cluster.my-test-cluster.name
+  cluster_name = aws_ecs_cluster.my-ecs-cluster.name
 
   capacity_providers = ["FARGATE"]
 
@@ -15,7 +15,7 @@ resource "aws_ecs_cluster_capacity_providers" "this" {
 }
 
 resource "aws_cloudwatch_log_group" "this" {
-  name = "${var.env_prefix_name}-log-group"
+  name = "${var.env_prefix_name}-firelens-log-group"
 
   tags = {
     Environment = "${var.env_prefix_name}"
@@ -23,63 +23,86 @@ resource "aws_cloudwatch_log_group" "this" {
 }
 resource "aws_ecs_task_definition" "my-task-definition" {
   family                   = "${var.env_prefix_name}-task-family"
-  task_role_arn            =  aws_iam_role.ecs_task_role.arn
-  execution_role_arn       =  aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   network_mode             = "awsvpc"
-  cpu                      = "${var.ecs_cpu}"
-  memory                   = "${var.ecs_memory}"
+  cpu                      = var.ecs_cpu
+  memory                   = var.ecs_memory
   requires_compatibilities = ["FARGATE"]
-
+  lifecycle {
+    ignore_changes = all
+  }
   container_definitions = <<DEFINITION
-  [
-    {
-      "image": "${var.ecs_docker_image}:latest",
-      "name": "${var.env_prefix_name}-container",
-      "portMappings": [
+[
+   {
+            "essential": true,
+            "image": "906394416424.dkr.ecr.us-west-2.amazonaws.com/aws-for-fluent-bit:latest",
+            "name": "log_router",
+            "firelensConfiguration": {
+                "type": "fluentbit"
+            },
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "${var.env_prefix_name}-firelens-log-group",
+                    "awslogs-region": "${var.region}",
+                    "awslogs-create-group": "true",
+                    "awslogs-stream-prefix": "firelens"
+                }
+            },
+            "memoryReservation": 50
+         },
          {
-          "containerPort": ${var.ecs_containerPort},
-          "protocol": "tcp",
-          "hostPort": ${var.ecs_hostPort}
-         }
-      ],
-      "logConfiguration": {
-          "logDriver": "awslogs",
-              "options": {
-                "awslogs-region": "${var.region}",
-                "awslogs-group": "${var.env_prefix_name}-log-group",
-                "awslogs-stream-prefix": "ecs"
-            }
-    	  }
-    }
-    
-  ]
-DEFINITION
+             "essential": true,
+             "image":"${var.ecs_docker_image}",
+             "name": "${var.env_prefix_name}-container",
+             "logConfiguration": {
+                 "logDriver":"awsfirelens",
+                 "options": {
+                    "Name": "es",
+                    "Host": "${aws_elasticsearch_domain.os.endpoint}",
+                    "Port": "443",
+                    "Index": "logstash",
+                    "Type": "_doc",
+                    "AWS_Auth": "On",
+                    "AWS_Region": "${var.region}",
+                    "tls": "On"
+                }
+            },
+            "memoryReservation": 300        
+      }
+
+]
+ DEFINITION
+depends_on = [
+  aws_elasticsearch_domain.os
+]
 }
 
 ####################################################################
 ############################ECS-SERVICE#############################
 ####################################################################
 resource "aws_ecs_service" "main" {
- name                               = "${var.env_prefix_name}-ecs-service"
- cluster                            = aws_ecs_cluster.my-test-cluster.id
- task_definition                    = aws_ecs_task_definition.my-task-definition.arn
- desired_count                      = var.ecs_desired_count 
- deployment_minimum_healthy_percent = var.ecs_min_healthy_percent
- deployment_maximum_percent         = var.ecs_max_healthy_percent
- launch_type                        = "FARGATE"
- scheduling_strategy                = "REPLICA"
+  name                               = "${var.env_prefix_name}-ecs-service"
+  cluster                            = aws_ecs_cluster.my-ecs-cluster.id
+  task_definition                    = aws_ecs_task_definition.my-task-definition.arn
+  desired_count                      = var.ecs_desired_count
+  deployment_minimum_healthy_percent = var.ecs_min_healthy_percent
+  deployment_maximum_percent         = var.ecs_max_healthy_percent
+  launch_type                        = "FARGATE"
+  scheduling_strategy                = "REPLICA"
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_sg.id]
-    subnets          = ["${var.private_subnets}"]
+    subnets          = "${var.private_subnets}"
     assign_public_ip = false
   }
   service_registries {
 
     registry_arn = aws_service_discovery_service.this.arn
-    port = var.ecs_containerPort
+    port         = var.ecs_containerPort
   }
-  
+
   lifecycle {
     ignore_changes = [task_definition, desired_count]
   }
@@ -87,4 +110,5 @@ resource "aws_ecs_service" "main" {
   depends_on = [
     aws_service_discovery_service.this
   ]
+
 }

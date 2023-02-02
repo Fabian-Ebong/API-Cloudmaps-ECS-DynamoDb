@@ -1,14 +1,14 @@
-# resource "aws_service_discovery_private_dns_namespace" "this" {
-#   name        = "${var.env_prefix_name}-cloudmap-ns"
-#   description = "Namespace of the Cloudmap"
-#   vpc         = "${var.vpc_id}"
-# }
+resource "aws_service_discovery_private_dns_namespace" "this" {
+  name        = "${var.env_prefix_name}-cloudmap-ns"
+  description = "Namespace of the Cloudmap"
+  vpc         = "${var.vpc_id}"
+}
 
 resource "aws_service_discovery_service" "this" {
   name = "${var.env_prefix_name}-service-descovery"
 
   dns_config {
-    namespace_id = "${var.cloudmap_namespace}" 
+    namespace_id = aws_service_discovery_private_dns_namespace.this.id
 
     dns_records {
       ttl  = 10

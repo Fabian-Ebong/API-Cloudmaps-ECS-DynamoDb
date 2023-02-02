@@ -3,13 +3,13 @@ region          = "us-east-1"
 
 # Comma seperated security group 
 allow_sg_cidr = "0.0.0.0/0"
-vpc_id        = "vpc-05936f74796e57f36"
+vpc_id        = "vpc-08982fe9562794148"
 
 # Comma seperated private-subnet values for example "subnet-0994bf83dacbe75f4, subnet-0994bf83dacbe75f4"
-private_subnets = ["subnet-006da8be6780f7723","subnet-016b49e307871b23c"]
+private_subnets = "subnet-01f3ecf19f3a6dbcb"
 
 #Docker Image with version
-ecs_docker_image = "995247101457.dkr.ecr.us-east-1.amazonaws.com/dynamodb-nodejs:latest"
+ecs_docker_image = "465587469711.dkr.ecr.us-east-1.amazonaws.com/ebong:latest"
 ecs_cpu          = 1024
 ecs_memory       = 2048
 #Container port and HostPort must be same with Fargate    
@@ -25,14 +25,12 @@ s3_tfstate_bucket_name = ""
 #  ID of the Existing CloudMap Mapnamespace
 cloudmap_namespace = "ns-lkjmqmwlturzsowt"
 
-route53_primary_zone = "techfocusllc.com"
-
-os_allow_ingres_ip                 = "119.160.99.68/32"
-os_custom_endpoint                 = "kibana.techfocusllc.com"
-os_custom_endpoint_certificate_arn = "arn:aws:acm:us-east-1:995247101457:certificate/58b53aeb-7e09-41f6-b7a0-3180f3a5f6fe"
+openvpn_ip                         = "0.0.0.0/0"
+os_custom_endpoint                 = "devkibana.xyz.com"
+os_custom_endpoint_certificate_arn = ""
 os_custom_endpoint_enabled         = true
 os_desired_state                   = "ENABLED"
-os_domain_name                     = "es-domain"
+os_domain_name                     = "xyz-kibana"
 os_ebs_enabled                     = true
 os_enforce_https                   = true
 os_instance_count                  = "1"

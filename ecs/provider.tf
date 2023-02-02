@@ -8,7 +8,7 @@ terraform {
 
   # required_version = ">= 1.2.0"
 
-# here are the provider of aws to connect
+  # here are the provider of aws to connect
 }
 provider "aws" {
   region = var.region
