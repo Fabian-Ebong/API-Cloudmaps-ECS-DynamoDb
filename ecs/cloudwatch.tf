@@ -1,6 +1,9 @@
 ## CloudWatch alarms for DynamoDB
 resource "aws_cloudwatch_metric_alarm" "this" {
+  count = var.ecs_cloudwatch_alarm_dynamodb_enable ? 1 : 0
+
   alarm_name          = "dynamodb_${var.dynamodb_table_name}_consumed_read_units"
+  alarm_actions       = [aws_sns_topic.this.arn]
   comparison_operator = var.dynamodb_comparison_operator
   evaluation_periods  = var.dynamodb_evaluation_periods
   metric_name         = var.dynamodb_metric_name
@@ -21,7 +24,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_alarm_cpu" {
 
   alarm_name        = "${var.ecs_cloudwatch_alarm_name}-cpu"
   alarm_description = "Monitors ECS CPU Utilization"
-  alarm_actions     = var.ecs_cloudwatch_alarm_cpu_actions
+  alarm_actions     = [aws_sns_topic.this.arn]
 
   comparison_operator = var.ecs_cloudwatch_alarm_cpu_comparison_operator
   evaluation_periods  = var.ecs_cloudwatch_alarm_cpu_evaluation_periods
@@ -43,7 +46,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_alarm_mem" {
 
   alarm_name        = "${var.ecs_cloudwatch_alarm_name}-mem"
   alarm_description = "Monitors ECS memory Utilization"
-  alarm_actions     = var.ecs_cloudwatch_alarm_mem_actions
+  alarm_actions     = [aws_sns_topic.this.arn]
 
   comparison_operator = var.ecs_cloudwatch_alarm_mem_comparison_operator
   evaluation_periods  = var.ecs_cloudwatch_alarm_mem_evaluation_periods
@@ -69,7 +72,7 @@ resource "aws_cloudwatch_metric_alarm" "api_gateway_alarm_5xx" {
 
   alarm_name          = "${var.api_gateway_cloudwatch_alarm_name}-5xx"
   alarm_description   = "Monitors API Gateway 5xx errors"
-  alarm_actions       = var.api_gateway_cloudwatch_alarm_5xx_actions
+  alarm_actions       = [aws_sns_topic.this.arn]
   comparison_operator = var.api_gateway_cloudwatch_alarm_5xx_comparison_operator
   evaluation_periods  = var.api_gateway_cloudwatch_alarm_5xx_evaluation_periods
   metric_name         = var.api_gateway_cloudwatch_alarm_5xx_metric_name
@@ -88,7 +91,7 @@ resource "aws_cloudwatch_metric_alarm" "api_gateway_alarm_4xx" {
 
   alarm_name          = "${var.api_gateway_cloudwatch_alarm_name}-4xx"
   alarm_description   = "Monitors API Gateway 4xx errors"
-  alarm_actions       = var.api_gateway_cloudwatch_alarm_4xx_actions
+  alarm_actions       = [aws_sns_topic.this.arn]
   comparison_operator = var.api_gateway_cloudwatch_alarm_4xx_comparison_operator
   evaluation_periods  = var.api_gateway_cloudwatch_alarm_4xx_evaluation_periods
   metric_name         = var.api_gateway_cloudwatch_alarm_4xx_metric_name
@@ -107,7 +110,7 @@ resource "aws_cloudwatch_metric_alarm" "api_gateway_alarm_latency" {
 
   alarm_name          = "${var.api_gateway_cloudwatch_alarm_name}-latency"
   alarm_description   = "Monitors API Gateway latency"
-  alarm_actions       = var.api_gateway_cloudwatch_alarm_latency_actions
+  alarm_actions       = [aws_sns_topic.this.arn]
   comparison_operator = var.api_gateway_cloudwatch_alarm_latency_comparison_operator
   evaluation_periods  = var.api_gateway_cloudwatch_alarm_latency_evaluation_periods
   metric_name         = var.api_gateway_cloudwatch_alarm_latency_metric_name
@@ -126,7 +129,7 @@ resource "aws_cloudwatch_metric_alarm" "api_gateway_alarm_count" {
 
   alarm_name          = "${var.api_gateway_cloudwatch_alarm_name}-count"
   alarm_description   = "Monitors API Gateway count"
-  alarm_actions       = var.api_gateway_cloudwatch_alarm_count_actions
+  alarm_actions       = [aws_sns_topic.this.arn]
   comparison_operator = var.api_gateway_cloudwatch_alarm_count_comparison_operator
   evaluation_periods  = var.api_gateway_cloudwatch_alarm_count_evaluation_periods
   metric_name         = var.api_gateway_cloudwatch_alarm_count_metric_name
@@ -139,4 +142,3 @@ resource "aws_cloudwatch_metric_alarm" "api_gateway_alarm_count" {
     ApiName = aws_apigatewayv2_api.this.name
   }
 }
-

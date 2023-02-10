@@ -6,12 +6,12 @@ resource "aws_iam_service_linked_role" "os" {
 
 
 data "aws_route53_zone" "primary" {
-  name = "${var.route53_primary_zone}"
+  name = var.route53_primary_zone
 }
 
 resource "aws_route53_record" "ecs_lb_record" {
-  name    = "${var.os_custom_endpoint}"
-  zone_id = "${data.aws_route53_zone.primary.zone_id}"
+  name    = var.os_custom_endpoint
+  zone_id = data.aws_route53_zone.primary.zone_id
   type    = "CNAME"
   ttl     = "300"
   records = ["${aws_elasticsearch_domain.os.endpoint}"]

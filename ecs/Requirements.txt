@@ -1,0 +1,56 @@
+Create terraform code to deploy:
+
+Regions
+    primary: us-east-1
+    secondary: us-west-2
+    Test failover from primary to secondary
+
+# Api gateway
+#     Http api
+#     or use existing http api   -------->>>>>
+
+# Vpc Link
+#     Variables to receive inputs of 
+#     VPc ID
+#     2 private subnet
+#     create security group for the existing Vpc
+#     with destination being vpc cidr (10.0.0.0/16)
+
+# Cloud Map
+#     create namespace/ also variable to accept existing namespace
+#     create service
+
+# ECS
+#     Fargate cluster
+#     Task definition
+#     service that uses latest image automatically
+    
+# ECR
+#     uses existing image pointing to latest image 
+
+# DynamoDB
+#     Create table with composite key (primary and sort key)  -------->>>>>
+#     detail querry monitoring -------->>>>>
+#     querry not scan  -------->>>>>
+
+Cloudwatch / Monitoring
+    Logs                    -------->>>>>
+    Alarms (sns emails)         -------->>>>>
+    Application performance monitoring  -------->>>>>
+    Cloudtrail and S3   -------->>>>>
+
+# open search     -------->>>>>
+#     Kibana          -------->>>>>
+#     visualization       -------->>>>>
+
+Environments        -------->>>>>
+    Dev
+    stage
+    prod
+
+Best practices          -------->>>>>
+    security
+    availability
+    disaster recovery
+    cost optimization
+

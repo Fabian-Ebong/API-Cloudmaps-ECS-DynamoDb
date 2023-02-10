@@ -29,9 +29,9 @@ resource "aws_ecs_task_definition" "my-task-definition" {
   cpu                      = var.ecs_cpu
   memory                   = var.ecs_memory
   requires_compatibilities = ["FARGATE"]
-  lifecycle {
-    ignore_changes = all
-  }
+  # lifecycle {
+  #   ignore_changes = all
+  # }
   container_definitions = <<DEFINITION
 [
    {
@@ -69,14 +69,20 @@ resource "aws_ecs_task_definition" "my-task-definition" {
                     "tls": "On"
                 }
             },
+            "environmentFiles": [
+                {
+                    "value": "${aws_s3_bucket.ecs_var_bucket.arn}/${var.ecs_env_file_name}",
+                    "type": "s3"
+                }
+            ],
             "memoryReservation": 300        
       }
 
 ]
  DEFINITION
-depends_on = [
-  aws_elasticsearch_domain.os
-]
+  depends_on = [
+    aws_elasticsearch_domain.os
+  ]
 }
 
 ####################################################################
@@ -91,10 +97,12 @@ resource "aws_ecs_service" "main" {
   deployment_maximum_percent         = var.ecs_max_healthy_percent
   launch_type                        = "FARGATE"
   scheduling_strategy                = "REPLICA"
+  #To use AWS SSM execute command from the terminal, uncomment the below line 
+  # enable_execute_command             = true
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_sg.id]
-    subnets          = "${var.private_subnets}"
+    subnets          = var.private_subnets
     assign_public_ip = false
   }
   service_registries {
@@ -103,12 +111,14 @@ resource "aws_ecs_service" "main" {
     port         = var.ecs_containerPort
   }
 
-  lifecycle {
-    ignore_changes = [task_definition, desired_count]
-  }
+  # lifecycle {
+  #   ignore_changes = [task_definition, desired_count]
+  # }
 
   depends_on = [
     aws_service_discovery_service.this
   ]
 
 }
+
+

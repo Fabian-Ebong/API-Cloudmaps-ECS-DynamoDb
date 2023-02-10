@@ -14,6 +14,7 @@ variable "ecs_cpu" {
   type = string
 }
 
+
 variable "ecs_memory" {
   type = string
 }
@@ -30,7 +31,7 @@ variable "region" {
 }
 
 variable "private_subnets" {
-  type = list
+  type = list(any)
 }
 
 variable "ecs_desired_count" {
@@ -186,15 +187,15 @@ variable "ecs_cloudwatch_alarm_name" {
   type        = string
 }
 
-variable "ecs_cloudwatch_alarm_cpu_actions" {
-  description = "The list of actions to take for cloudwatch alarms"
-  type        = list(string)
-}
+# variable "ecs_cloudwatch_alarm_cpu_actions" {
+#   description = "The list of actions to take for cloudwatch alarms"
+#   type        = list(string)
+# }
 
-variable "ecs_cloudwatch_alarm_mem_actions" {
-  description = "The list of actions to take for cloudwatch alarms"
-  type        = list(string)
-}
+# variable "ecs_cloudwatch_alarm_mem_actions" {
+#   description = "The list of actions to take for cloudwatch alarms"
+#   type        = list(string)
+# }
 
 variable "ecs_cloudwatch_alarm_cpu_enable" {
   description = "Enable the CPU Utilization CloudWatch metric alarm"
@@ -248,10 +249,10 @@ variable "api_gateway_cloudwatch_alarm_5xx_threshold" {
   type        = number
 }
 
-variable "api_gateway_cloudwatch_alarm_5xx_actions" {
-  description = "The list of actions to take for cloudwatch alarms"
-  type        = list(string)
-}
+# variable "api_gateway_cloudwatch_alarm_5xx_actions" {
+#   description = "The list of actions to take for cloudwatch alarms"
+#   type        = list(string)
+# }
 
 variable "api_gateway_cloudwatch_alarm_4xx_enable" {
   description = "Enable the 4xx Error Rate CloudWatch metric alarm"
@@ -263,10 +264,10 @@ variable "api_gateway_cloudwatch_alarm_4xx_threshold" {
   type        = number
 }
 
-variable "api_gateway_cloudwatch_alarm_4xx_actions" {
-  description = "The list of actions to take for cloudwatch alarms"
-  type        = list(string)
-}
+# variable "api_gateway_cloudwatch_alarm_4xx_actions" {
+#   description = "The list of actions to take for cloudwatch alarms"
+#   type        = list(string)
+# }
 
 variable "api_gateway_cloudwatch_alarm_latency_enable" {
   description = "Enable the Latency CloudWatch metric alarm"
@@ -278,10 +279,10 @@ variable "api_gateway_cloudwatch_alarm_latency_threshold" {
   type        = number
 }
 
-variable "api_gateway_cloudwatch_alarm_latency_actions" {
-  description = "The list of actions to take for cloudwatch alarms"
-  type        = list(string)
-}
+# variable "api_gateway_cloudwatch_alarm_latency_actions" {
+#   description = "The list of actions to take for cloudwatch alarms"
+#   type        = list(string)
+# }
 
 variable "api_gateway_cloudwatch_alarm_count_enable" {
   description = "Enable the Latency CloudWatch metric alarm"
@@ -293,10 +294,10 @@ variable "api_gateway_cloudwatch_alarm_count_threshold" {
   type        = number
 }
 
-variable "api_gateway_cloudwatch_alarm_count_actions" {
-  description = "The list of actions to take for cloudwatch alarms"
-  type        = list(string)
-}
+# variable "api_gateway_cloudwatch_alarm_count_actions" {
+#   description = "The list of actions to take for cloudwatch alarms"
+#   type        = list(string)
+# }
 
 variable "api_gateway_cloudwatch_alarm_5xx_comparison_operator" {
   description = "The arithmetic operation to use when comparing the specified Statistic and Threshold. The specified Statistic value is used as the first operand."
@@ -398,6 +399,12 @@ variable "api_gateway_cloudwatch_alarm_count_statistic" {
   type        = string
 }
 
+variable "cloudtrail_enable_logging" {
+  type        = string
+  description = "cloudtrail log file for validation"
+}
+
+
 ## Dynamodb variables
 variable "dynamodb_table_name" {
   type        = string
@@ -424,6 +431,12 @@ variable "dynamodb_stream_enabled" {
   type        = string
   description = "DynamoDB table stream enabled"
 }
+#stream view 
+variable "stream_view_type" {
+  type        = string
+  description = "DynamoDB table stream view"
+}
+
 #region for replication
 variable "dynamodb_replica_region_name" {
   type        = string
@@ -431,6 +444,16 @@ variable "dynamodb_replica_region_name" {
 }
 
 # Dynamodb CLOUDWATCH VARIABLES
+variable "ecs_cloudwatch_alarm_dynamodb_enable" {
+  type        = bool
+  description = "Enable cloudwatch alarm for dynamodb"
+}
+
+# variable "ecs_cloudwatch_alarm_dynamodb_actions" {
+#   type        = list(string)
+#   description = "The list of actions to execute when this alarm transitions into an ALARM state from any other state. Each action is specified as an Amazon Resource Name (ARN)"
+# }
+
 variable "dynamodb_comparison_operator" {
   type        = string
   description = "The arithmetic operation to use when comparing the specified Statistic and Threshold. The specified Statistic value is used as the first operand."
@@ -463,4 +486,130 @@ variable "dynamodb_consumed_read_units_threshold" {
 variable "route53_primary_zone" {
   type        = string
   description = "Route 53 DNS Zone"
+}
+
+## SNS VARIABLES
+variable "sns_topic_name" {
+  type        = string
+  description = "SNS topic name"
+}
+
+## SNS SUBSCRIPTION VARIABLES
+variable "sns_subscription_protocol" {
+  type        = string
+  description = "SNS topic protocol type"
+}
+
+variable "sns_subscription_endpoint" {
+  type        = string
+  description = "SNS topic endpoint email"
+}
+
+## S3 variables
+variable "cloudtrail_s3_bucket_name" {
+  type        = string
+  description = "S3 bucket name for CloudTrail"
+}
+
+variable "cloudtrail_s3_bucket_acl" {
+  type        = string
+  description = "S3 bucket acl for CloudTrail"
+}
+
+## CLOUDTRAIL VARIABLES
+variable "cloudtrail_log_group_name" {
+  type        = string
+  description = "CloudTrail log group name"
+}
+
+variable "cloudtrail_log_group_retention_in_days" {
+  type        = number
+  description = "CloudTrail log group retention in days"
+}
+
+variable "cloudtrail_name" {
+  type        = string
+  description = "CloudTrail name"
+}
+
+variable "cloudtrail_s3_key_prefix" {
+  type        = string
+  description = "CloudTrail name"
+}
+
+variable "cloudtrail_include_global_service_events" {
+  type        = bool
+  description = "CloudTrail include global service events"
+}
+
+variable "cloudtrail_is_multi_region_trail" {
+  type        = bool
+  description = "CloudTrail is multi region trail"
+}
+
+variable "cloudtrail_is_organization_trail" {
+  type        = bool
+  description = "CloudTrail is organization trail"
+}
+
+variable "cloudtrail_enable_log_file_validation" {
+  type        = bool
+  description = "CloudTrail enable log file validation"
+}
+
+variable "cloudtrail_assume_role_policy_actons" {
+  type        = list(string)
+  description = "CloudTrail role policy document actions"
+}
+
+variable "cloudtrail_assume_role_policy_principal_type" {
+  type        = string
+  description = "CloudTrail role policy document principal type"
+}
+
+variable "cloudtrail_assume_role_policy_principal_identifiers" {
+  type        = list(string)
+  description = "CloudTrail role policy document principal identifiers"
+}
+
+variable "cloudtrail_role_name" {
+  type        = string
+  description = "CloudTrail role name"
+}
+
+variable "cloudtrail_policy_name" {
+  type        = string
+  description = "CloudTrail role path"
+}
+
+variable "cloudtrail_policy_document_effect" {
+  type        = string
+  description = "CloudTrail role policy document"
+}
+
+variable "cloudtrail_policy_document_actions" {
+  type        = list(string)
+  description = "CloudTrail role policy document actions"
+}
+
+variable "cloudtrail_policy_document_resources" {
+  type        = list(string)
+  description = "CloudTrail role policy document resources"
+}
+
+#################### ECS VARIABLES BUCKET VARIABLES ####################
+
+variable "ecs_var_bucket_name" {
+  type        = string
+  description = "S3 bucket name for ECS"
+}
+
+variable "ecs_var_bucket_acl" {
+  type        = string
+  description = "S3 bucket acl for ECS"
+}
+
+variable "ecs_env_file_name" {
+  type        = string
+  description = "ECS env file name"
 }

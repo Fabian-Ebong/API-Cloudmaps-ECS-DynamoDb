@@ -1,7 +1,7 @@
 resource "aws_apigatewayv2_vpc_link" "this" {
   name               = "${var.env_prefix_name}-vpc-link"
   security_group_ids = [aws_security_group.vpc_link_securitygroup.id]
-  subnet_ids         = "${var.private_subnets}"
+  subnet_ids         = var.private_subnets
 
   tags = {
     Usage = "${var.env_prefix_name}-vpc-link"

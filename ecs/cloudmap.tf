@@ -1,7 +1,7 @@
 resource "aws_service_discovery_private_dns_namespace" "this" {
   name        = "${var.env_prefix_name}-cloudmap-ns"
   description = "Namespace of the Cloudmap"
-  vpc         = "${var.vpc_id}"
+  vpc         = var.vpc_id
 }
 
 resource "aws_service_discovery_service" "this" {

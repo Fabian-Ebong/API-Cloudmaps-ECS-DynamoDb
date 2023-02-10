@@ -23,7 +23,32 @@ resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attach
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_iam_policy" "ecs_to_s3_policy" {
+  name        = "${var.env_prefix_name}-s3-policy"
+  description = "Policy that allows access to Other Services"
 
+  policy = <<POLICY
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "s3-object-lambda:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+POLICY
+}
+
+resource "aws_iam_role_policy_attachment" "ecs-task-execution-s3-policy-attachment" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  depends_on = [aws_iam_policy.ecs_to_s3_policy]
+  policy_arn = aws_iam_policy.ecs_to_s3_policy.arn
+}
 
 resource "aws_iam_role" "ecs_task_role" {
   name = "${var.env_prefix_name}-task-role"
@@ -48,7 +73,7 @@ EOF
 
 
 
-resource "aws_iam_policy" "dynamodb" {
+resource "aws_iam_policy" "ecs_task_policy" {
   name        = "${var.env_prefix_name}-task-policy"
   description = "Policy that allows access to Other Services"
 
@@ -69,17 +94,21 @@ resource "aws_iam_policy" "dynamodb" {
                "dynamodb:Scan",
                "dynamodb:Query",
                "dynamodb:UpdateItem",
-               "dynamodb:UpdateTable"
+               "dynamodb:UpdateTable",
+               "s3:*",
+               "s3-object-lambda:*"
            ],
            "Resource": "*"
        }
    ]
 }
+
 EOF
+
 }
 resource "aws_iam_role_policy_attachment" "ecs-task-role-policy-attachment" {
   role       = aws_iam_role.ecs_task_role.name
-  policy_arn = aws_iam_policy.dynamodb.arn
+  policy_arn = aws_iam_policy.ecs_task_policy.arn
 }
 
 resource "aws_iam_policy" "policy" {
